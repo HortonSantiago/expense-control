@@ -1,7 +1,10 @@
 import { useState } from "react";
 import CerrarBtn from "../img/cerrar.svg";
+import Mensaje from "./Mensaje";
 
-const Modal = ({ setModal, animarModal, setAnimarModal }) => {
+const Modal = ({ setModal, animarModal, setAnimarModal, guardarGasto }) => {
+  const [mensaje, setMensaje] = useState("");
+
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -14,13 +17,30 @@ const Modal = ({ setModal, animarModal, setAnimarModal }) => {
     }, 1000);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if ([nombre, cantidad, categoria].includes("")) {
+      setMensaje("Todos Los campos son Obligatorios");
+
+      setTimeout(() => {
+        setMensaje("");
+      }, 4000);
+      return;
+    }
+    guardarGasto({ nombre, cantidad, categoria });
+  };
+
   return (
     <div className="modal">
       <div className="cerrar-modal">
         <img src={CerrarBtn} alt="Cerrar modal Btn" onClick={ocultarModal} />
       </div>
-      <form className={`formulario ${animarModal ? "animar" : "cerrar"}`}>
+      <form
+        onSubmit={handleSubmit}
+        className={`formulario ${animarModal ? "animar" : "cerrar"}`}
+      >
         <legend className="">Nuevo Gasto</legend>
+        {mensaje && <Mensaje tipo="error">{mensaje}</Mensaje>}
 
         <div className="campo">
           <label htmlFor="nombre"> Nombre Gasto</label>
@@ -41,11 +61,9 @@ const Modal = ({ setModal, animarModal, setAnimarModal }) => {
             type="number"
             name="cantidad"
             id="cantidad"
-            placeholder="Añade La cantidad del gasto. Ej 300"
+            placeholder="Añade La cantidad del gasto:  Ej. 300"
             value={cantidad}
-            onChange={(e) => {
-              setCantidad(Number(e.target.value));
-            }}
+            onChange={(e) => setCantidad(Number(e.target.value))}
           />
 
           <label htmlFor="categoria"> Categoria</label>
@@ -53,24 +71,22 @@ const Modal = ({ setModal, animarModal, setAnimarModal }) => {
             name="categoria"
             id="categoria"
             value={categoria}
-            onChange={(e) => {
-              setCategoria(e.target.value);
-            }}
+            onChange={(e) => setCategoria(e.target.value)}
           >
             <option value="" disabled selected>
               -- Selecciones --
             </option>
             <option name="ahorro" value="ahorro">
-              Comida
-            </option>
-            <option name="comida" value="comida">
               Ahorro
             </option>
-            <option name="salidas" value="salidas">
-              Salidas
+            <option name="comida" value="comida">
+              Comida
+            </option>
+            <option name="salud" value="salud">
+              Salud
             </option>
             <option name="casa" value="casa">
-              Casas
+              Casa
             </option>
             <option name="gastos" value="gastos">
               Gastos Varios
